@@ -1,6 +1,8 @@
 # valley-server
 
-server with valley-module: https://github.com/hitvalley/valley-module
+code: https://github.com/hitvalley/server-module
+
+> server with valley-module: https://github.com/hitvalley/valley-module
 
 ## 引入 valley-server
 
