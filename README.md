@@ -18,13 +18,13 @@ const ValleyServer = require('valley-server');
 
 const server = new ValleyServer();
 server.use('test', async function(next){
-  this.context.test('hello valley');
+  this.context.text('hello valley');
   await next();
 });
 
 server.listen({
   port: 3000
-}).listen(res => console.log('http://localhost:3000'));
+}).then(res => console.log('http://localhost:3000'));
 ```
 
 ## 运行
