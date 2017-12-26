@@ -4,12 +4,15 @@
   "description": "valley module for server",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "demo": "node demo/app.js"
   },
   "keywords": [
     "valley-module",
     "server"
   ],
   "author": "hitvalley",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "valley-module": "^1.0.2"
+  }
 }
