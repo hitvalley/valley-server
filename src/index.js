@@ -1,9 +1,17 @@
 const ValleyModule = require('valley-module');
+const ValleyRouter = require('valley-router');
+const pathToRegexp = require('path-to-regexp');
+
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
+const path = require('path');
 
 class ValleyServer extends ValleyModule {
+  constructor(input) {
+    super(input);
+    this.staticList = [];
+  }
   prepare() {
     this.use('prepare', async next => {
       this.context.text = async (text, headers) => {
@@ -11,6 +19,7 @@ class ValleyServer extends ValleyModule {
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
         });
+        console.log(text)
         res.end(`${text}\n`);
       };
       this.context.json = async (data, headers) => {
@@ -65,6 +74,24 @@ class ValleyServer extends ValleyModule {
       }, function() {
         resolve(arguments);
       });
+    });
+  }
+  staticPath(pathname, rule) {
+    rule = rule || '/';
+    // let pathRule = pathToRegexp(rule + '(.*\.(css|js|html|svg)$)')
+    let pathRule = new RegExp(rule + '(.*\\.(?:css|js|html|svg))$')
+    this.use(`static-${rule}`, async function(next) {
+      let reqPath = this.context.req.url;
+      // let res = pathRule.match(path);
+      let res = reqPath.match(pathRule);
+      // console.log(res, reqPath, pathRule);
+      if (res && res[1]) {
+        console.log(path.join(pathname, res[1]))
+        let content = fs.readFileSync(path.join(pathname, res[1]));
+        this.context.text(content.toString());
+      } else {
+        await next();
+      }
     });
   }
 }

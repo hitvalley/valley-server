@@ -13,6 +13,8 @@
   "author": "hitvalley",
   "license": "ISC",
   "dependencies": {
-    "valley-module": "^1.0.2"
+    "path-to-regexp": "^2.1.0",
+    "valley-module": "^1.0.2",
+    "valley-router": "^1.0.4"
   }
 }
