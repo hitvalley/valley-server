@@ -17,6 +17,11 @@ npm i --save valley-server
 const ValleyServer = require('valley-server');
 
 const server = new ValleyServer();
+
+// 静态文件服务器设置
+server.staticPath(path.join(__dirname, 'static'));
+
+// 动态服务器设置
 server.use('test', async function(next){
   this.context.text('hello valley');
   await next();
