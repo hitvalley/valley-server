@@ -1,6 +1,4 @@
 const ValleyModule = require('valley-module');
-const ValleyRouter = require('valley-router');
-const pathToRegexp = require('path-to-regexp');
 
 const http = require('http');
 const https = require('https');
@@ -19,7 +17,7 @@ class ValleyServer extends ValleyModule {
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
         });
-        console.log(text)
+        debug('text', text);
         res.end(`${text}\n`);
       };
       this.context.json = async (data, headers) => {
@@ -27,6 +25,7 @@ class ValleyServer extends ValleyModule {
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
         });
+        debug('json', data);
         let text = JSON.stringify(data);
         res.end(`${text}\n`);
       };

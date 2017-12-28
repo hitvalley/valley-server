@@ -6,6 +6,10 @@
   "scripts": {
     "demo": "node demo/app.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hitvalley/valley-server.git"
+  },
   "keywords": [
     "valley-module",
     "server"
@@ -13,8 +17,7 @@
   "author": "hitvalley",
   "license": "ISC",
   "dependencies": {
-    "path-to-regexp": "^2.1.0",
-    "valley-module": "^1.0.2",
-    "valley-router": "^1.0.4"
+    "debug": "^3.1.0",
+    "valley-module": "^1.0.2"
   }
 }
