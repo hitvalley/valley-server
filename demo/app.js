@@ -5,9 +5,9 @@ const path = require('path');
 const server = new ValleyServer();
 
 server.use('time', async function(next){
-  console.time('start');
+  console.time('server-time');
   await next();
-  console.timeEnd('start');
+  console.timeEnd('server-time');
 });
 
 server.staticPath(path.join(__dirname, 'static'));
