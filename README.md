@@ -14,22 +14,32 @@ npm i --save valley-server
 
 ```
 // 创建 app.js
-const ValleyServer = require('valley-server');
+
+const ValleyServer = require('../src/index');
+
+const path = require('path');
 
 const server = new ValleyServer();
 
-// 静态文件服务器设置
-server.staticPath(path.join(__dirname, 'static'));
+// 设置服务器时间
+server.use('time', async function(next){
+  console.time('start');
+  await next();
+  console.timeEnd('start');
+});
 
-// 动态服务器设置
-server.use('test', async function(next){
+// 静态文件服务设置
+server.staticPath(path.join(__dirname, 'static'));
+server.staticPath(path.join(__dirname, 'static/img'), /\.svg$/);
+
+// 动态文件服务设置
+server.use('default', async function(next) {
   this.context.text('hello valley');
   await next();
 });
 
-server.listen({
-  port: 3000
-}).then(res => console.log('http://localhost:3000'));
+const port = 8080;
+server.listen(port).then(res => console.log(`http://localhost:${port}`));
 ```
 
 ## 运行

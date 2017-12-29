@@ -4,9 +4,16 @@ const path = require('path');
 
 const server = new ValleyServer();
 
-server.staticPath(path.join(__dirname, 'static'));
+server.use('time', async function(next){
+  console.time('start');
+  await next();
+  console.timeEnd('start');
+});
 
-server.use('test', async function(next) {
+server.staticPath(path.join(__dirname, 'static'));
+server.staticPath(path.join(__dirname, 'static/img'), /\.svg$/);
+
+server.use('default', async function(next) {
   this.context.text('hello valley');
   await next();
 });

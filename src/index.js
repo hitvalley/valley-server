@@ -1,4 +1,5 @@
 const ValleyModule = require('valley-module');
+const debug = require('debug')('valley-server');
 
 const http = require('http');
 const https = require('https');
@@ -76,17 +77,25 @@ class ValleyServer extends ValleyModule {
     });
   }
   staticPath(pathname, rule) {
-    rule = rule || '/';
+    // rule = rule || '/';
     // let pathRule = pathToRegexp(rule + '(.*\.(css|js|html|svg)$)')
-    let pathRule = new RegExp(rule + '(.*\\.(?:css|js|html|svg))$')
+    // let pathRule = new RegExp(rule + '(.*\\.(?:css|js|html|svg))$')
     this.use(`static-${rule}`, async function(next) {
       let reqPath = this.context.req.url;
-      // let res = pathRule.match(path);
-      let res = reqPath.match(pathRule);
-      // console.log(res, reqPath, pathRule);
-      if (res && res[1]) {
-        console.log(path.join(pathname, res[1]))
-        let content = fs.readFileSync(path.join(pathname, res[1]));
+      if (rule && !rule.test(reqPath)) {
+        debug('not match the rule');
+        return await next();
+      }
+      let filename = path.join(pathname, reqPath);
+      let hasFile = false;
+      if (fs.existsSync(filename)) {
+        let fsStat = fs.statSync(filename);
+        if (fsStat.isFile()) {
+          hasFile = true;
+        }
+      }
+      if (hasFile) {
+        let content = fs.readFileSync(filename);
         this.context.text(content.toString());
       } else {
         await next();
