@@ -18,7 +18,7 @@ class ValleyServer extends ValleyModule {
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
         });
-        debug('text', text);
+        // debug('text', text);
         res.end(`${text}\n`);
       };
       this.context.json = async (data, headers) => {
@@ -26,7 +26,7 @@ class ValleyServer extends ValleyModule {
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
         });
-        debug('json', data);
+        // debug('json', data);
         let text = JSON.stringify(data);
         res.end(`${text}\n`);
       };
@@ -83,7 +83,7 @@ class ValleyServer extends ValleyModule {
     this.use(`static-${rule}`, async function(next) {
       let reqPath = this.context.req.url;
       if (rule && !rule.test(reqPath)) {
-        debug('not match the rule');
+        debug(`${reqPath} not match the rule [${rule}]`);
         return await next();
       }
       let filename = path.join(pathname, reqPath);
