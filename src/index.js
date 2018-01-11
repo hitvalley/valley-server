@@ -13,7 +13,7 @@ class ValleyServer extends ValleyModule {
   }
   prepare() {
     this.use('prepare', async next => {
-      this.context.text = async (text, headers) => {
+      this.text = this.context.text = async (text, headers) => {
         let res = this.context.res;
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
@@ -21,7 +21,7 @@ class ValleyServer extends ValleyModule {
         // debug('text', text);
         res.end(`${text}\n`);
       };
-      this.context.json = async (data, headers) => {
+      this.json = this.context.json = async (data, headers) => {
         let res = this.context.res;
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
