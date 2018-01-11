@@ -15,6 +15,7 @@ class ValleyServer extends ValleyModule {
     this.use('prepare', async next => {
       this.text = this.context.text = async (text, headers) => {
         let res = this.context.res;
+        res.setHeader('Content-Type', 'text/html');
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
         });
@@ -23,6 +24,7 @@ class ValleyServer extends ValleyModule {
       };
       this.json = this.context.json = async (data, headers) => {
         let res = this.context.res;
+        res.setHeader('Content-Type', 'application/json');
         Object.keys(headers || {}).forEach(key => {
           res.setHeader(key, headers[key]);
         });
