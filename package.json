@@ -1,6 +1,6 @@
 {
   "name": "valley-server",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "valley module for server",
   "main": "src/index.js",
   "scripts": {
