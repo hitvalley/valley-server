@@ -6,6 +6,34 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
+const ContentTypeConfig = {
+  'html': 'text/html',
+  'json': 'application/json',
+  'js': 'application/javascript',
+  'css': 'text/css',
+  'svg': 'image/svg+xml',
+  'png': 'image/png',
+  'gif': 'image/gif',
+  'jpg': 'image/jpg',
+  'jpeg': 'image/jpeg',
+  'gif': 'image/gif',
+  'mp3': 'audio/mp3',
+  'mp4': 'audio/mp4',
+  'woff': 'application/font-woff',
+  'woff2': 'application/font-woff2',
+  'eot': 'application/octet-stream',
+  'emz': 'application/octet-stream',
+  'tiff': 'image/tiff',
+  'tif': 'image/tiff',
+};
+
+let send = (res, data, headers) => {
+  Object.keys(headers || {}).forEach(key => {
+    res.setHeader(key, headers[key]);
+  });
+  res.end(`${data}\n`);
+};
+
 class ValleyServer extends ValleyModule {
   constructor(input) {
     super(input);
@@ -15,22 +43,16 @@ class ValleyServer extends ValleyModule {
     this.use('prepare', async next => {
       this.text = this.context.text = async (text, headers) => {
         let res = this.context.res;
-        res.setHeader('Content-Type', 'text/html');
-        Object.keys(headers || {}).forEach(key => {
-          res.setHeader(key, headers[key]);
-        });
-        // debug('text', text);
-        res.end(`${text}\n`);
+        send(res, text, Object.assign({
+          'Context-Type': ContentTypeConfig.html
+        }, headers || {}));
       };
       this.json = this.context.json = async (data, headers) => {
         let res = this.context.res;
-        res.setHeader('Content-Type', 'application/json');
-        Object.keys(headers || {}).forEach(key => {
-          res.setHeader(key, headers[key]);
-        });
-        // debug('json', data);
-        let text = JSON.stringify(data);
-        res.end(`${text}\n`);
+        data = typeof data === 'string' ? JSON.stringify(data) : data;
+        send(res, data, Object.assign({
+          'Context-Type': ContentTypeConfig.html
+        }, headers || {}));
       };
       await next();
     });
@@ -97,8 +119,12 @@ class ValleyServer extends ValleyModule {
         }
       }
       if (hasFile) {
+        let res = filename.match(/\.([^.]+)$/);
+        let contentType = ContentTypeConfig[res && res[1]] || 'text/html';
         let content = fs.readFileSync(filename);
-        this.context.text(content.toString());
+        this.context.text(content.toString(), {
+          'Context-Type': contentType
+        });
       } else {
         await next();
       }
