@@ -44,14 +44,16 @@ class ValleyServer extends ValleyModule {
       this.text = this.context.text = async (text, headers) => {
         let res = this.context.res;
         send(res, text, Object.assign({
-          'Context-Type': ContentTypeConfig.html
+          'Context-Type': ContentTypeConfig.html,
+          'Content-Type': ContentTypeConfig.html
         }, headers || {}));
       };
       this.json = this.context.json = async (data, headers) => {
         let res = this.context.res;
         data = typeof data === 'string' ? JSON.stringify(data) : data;
         send(res, data, Object.assign({
-          'Context-Type': ContentTypeConfig.html
+          'Context-Type': ContentTypeConfig.json,
+          'Content-Type': ContentTypeConfig.json
         }, headers || {}));
       };
       await next();
@@ -123,9 +125,11 @@ class ValleyServer extends ValleyModule {
         let contentType = ContentTypeConfig[res && res[1]] || 'text/html';
         let content = fs.readFileSync(filename);
         this.context.text(content.toString(), {
-          'Context-Type': contentType
+          'Context-Type': contentType,
+          'Content-Type': contentType
         });
       } else {
+        this.context.res.state = 404;
         await next();
       }
     });
