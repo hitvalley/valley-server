@@ -27,8 +27,12 @@ const ContentTypeConfig = {
   'tif': 'image/tiff',
 };
 
+const DefaultOptions = {
+  encoding: 'utf-8'
+};
+
 let send = (res, data, headers) => {
-  res.setHeader('Content-Encoding', 'utf-8');
+  res.setHeader('Content-Encoding', 'identity');
   Object.keys(headers || {}).forEach(key => {
     res.setHeader(key, headers[key]);
   });
@@ -101,12 +105,20 @@ class ValleyServer extends ValleyModule {
       });
     });
   }
-  staticPath(pathname, rule) {
+  staticPath(pathname, options) {
     // rule = rule || '/';
     // let pathRule = pathToRegexp(rule + '(.*\.(css|js|html|svg)$)')
     // let pathRule = new RegExp(rule + '(.*\\.(?:css|js|html|svg))$')
     this.use(`static-${rule}`, async function(next) {
       let reqPath = this.context.req.url;
+      options = options || {};
+      if (typeof options === 'string') {
+        options = Object.assign(DefaultOptions, {
+          rule: options
+        });
+      }
+      let rule = options.rule;
+      let encoding = options.encoding;
       if (rule && !rule.test(reqPath)) {
         debug(`${reqPath} not match the rule [${rule}]`);
         return await next();
@@ -122,9 +134,12 @@ class ValleyServer extends ValleyModule {
       if (hasFile) {
         let res = filename.match(/\.([^.]+)$/);
         let contentType = ContentTypeConfig[res && res[1]] || 'text/html';
-        let content = fs.readFileSync(filename);
+        let content = fs.readFileSync(filename, {
+          encoding,
+          flag: 'r'
+        });
         this.context.text(content.toString(), {
-          'Content-Type': contentType
+          'Content-Type': `${contentType};charset=${encoding}`,
         });
       } else {
         this.context.res.state = 404;
