@@ -109,16 +109,22 @@ class ValleyServer extends ValleyModule {
     // rule = rule || '/';
     // let pathRule = pathToRegexp(rule + '(.*\.(css|js|html|svg)$)')
     // let pathRule = new RegExp(rule + '(.*\\.(?:css|js|html|svg))$')
+    let otype = typeof options
+    if (otype === 'string' || otype === 'object') {
+      if (otype === 'string') {
+        options = {
+          rule: options
+        }
+      }
+      options = Object.assign(DefaultOptions, options)
+    } else {
+      options = DefaultOptions;
+    }
+    let rule = options.rule || '';
+    let encoding = options.encoding;
+    debug('static path options: ', JSON.stringify(options));
     this.use(`static-${rule}`, async function(next) {
       let reqPath = this.context.req.url;
-      options = options || {};
-      if (typeof options === 'string') {
-        options = Object.assign(DefaultOptions, {
-          rule: options
-        });
-      }
-      let rule = options.rule;
-      let encoding = options.encoding;
       if (rule && !rule.test(reqPath)) {
         debug(`${reqPath} not match the rule [${rule}]`);
         return await next();
