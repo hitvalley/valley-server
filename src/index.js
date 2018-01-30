@@ -59,8 +59,7 @@ class ValleyServer extends ValleyModule {
           'Content-Type': ContentTypeConfig.json
         }, headers || {}));
       };
-      this.image = this.context.image = async (filename, headers) => {
-        let content = fs.readFileSync(filename);
+      this.send = this.context.send = async (content, headers) => {
         let res = this.context.res;
         res.setHeader('Content-Encoding', 'identity');
         Object.keys(headers || {}).forEach(key => {
@@ -150,17 +149,16 @@ class ValleyServer extends ValleyModule {
       if (hasFile) {
         let res = filename.match(/\.([^.]+)$/);
         let contentType = ContentTypeConfig[res && res[1]] || 'text/html';
-        if (contentType.match(/image/)) {
-          this.context.image(filename)
+        let content;
+        if (contentType.match(/image|audio|video/)) {
+          content = fs.readFileSync(filename);
         } else {
-          let content = fs.readFileSync(filename, {
-            encoding,
-            flag: 'r'
-          });
-          this.context.text(content.toString(), {
-            'Content-Type': `${contentType}`,
-          });
+          content = fs.readFileSync(filename, encoding);
+          contentType += `;charset=${encoding}`;
         }
+        this.sendFile(content, {
+          'Content-Type': contentType,
+        });
       } else {
         this.context.res.state = 404;
         await next();
