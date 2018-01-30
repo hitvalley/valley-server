@@ -156,7 +156,7 @@ class ValleyServer extends ValleyModule {
           content = fs.readFileSync(filename, encoding);
           contentType += `;charset=${encoding}`;
         }
-        this.sendFile(content, {
+        this.send(content, {
           'Content-Type': contentType,
         });
       } else {
